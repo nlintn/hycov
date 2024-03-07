@@ -97,8 +97,8 @@ void OvGridLayout::onWindowCreatedTiling(CWindow *pWindow, eDirection direction)
     pNode->ovbk_windowMonitorId = pWindow->m_iMonitorID;
     pNode->ovbk_windowWorkspaceId = pWindow->m_iWorkspaceID;
     pNode->ovbk_windowFullscreenMode  = pWindowOriWorkspace->m_efFullscreenMode;
-    pNode->ovbk_position = pWindow->m_vRealPosition.goalv();
-    pNode->ovbk_size = pWindow->m_vRealSize.goalv();
+    pNode->ovbk_position = pWindow->m_vRealPosition.goal();
+    pNode->ovbk_size = pWindow->m_vRealSize.goal();
     pNode->ovbk_windowIsFloating = pWindow->m_bIsFloating;
     pNode->ovbk_windowIsFullscreen = pWindow->m_bIsFullscreen;
     pNode->ovbk_windowWorkspaceName = pWindowOriWorkspace->m_szName;

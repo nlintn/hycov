@@ -123,8 +123,8 @@ CWindow *direction_select(std::string arg){
 		delete[] pTempCWindows;
   		return nullptr;
 	}
-  	int sel_x = pTempClient->m_vRealPosition.goalv().x;
-  	int sel_y = pTempClient->m_vRealPosition.goalv().y;
+  	int sel_x = pTempClient->m_vRealPosition.goal().x;
+  	int sel_y = pTempClient->m_vRealPosition.goal().y;
   	long long int distance = LLONG_MAX;;
   	// int temp_focus = 0;
 
@@ -135,9 +135,9 @@ CWindow *direction_select(std::string arg){
 		// Find the window with the closest coordinates 
 		// in the top left corner of the window (is limited to same x)
   		for (int _i = 0; _i <= last; _i++) {
-  		  if (pTempCWindows[_i]->m_vRealPosition.goalv().y < sel_y && pTempCWindows[_i]->m_vRealPosition.goalv().x == sel_x) {
-  		    int dis_x = pTempCWindows[_i]->m_vRealPosition.goalv().x - sel_x;
-  		    int dis_y = pTempCWindows[_i]->m_vRealPosition.goalv().y - sel_y;
+  		  if (pTempCWindows[_i]->m_vRealPosition.goal().y < sel_y && pTempCWindows[_i]->m_vRealPosition.goal().x == sel_x) {
+  		    int dis_x = pTempCWindows[_i]->m_vRealPosition.goal().x - sel_x;
+  		    int dis_y = pTempCWindows[_i]->m_vRealPosition.goal().y - sel_y;
   		    long long int tmp_distance = dis_x * dis_x + dis_y * dis_y; 
   		    if (tmp_distance < distance) {
   		      distance = tmp_distance;
@@ -149,9 +149,9 @@ CWindow *direction_select(std::string arg){
 		// find again(is unlimited to x)
 		if(!pTempFocusCWindows){
   			for (int _i = 0; _i <= last; _i++) {
-  			  if (pTempCWindows[_i]->m_vRealPosition.goalv().y < sel_y ) {
-  			    int dis_x = pTempCWindows[_i]->m_vRealPosition.goalv().x - sel_x;
-  			    int dis_y = pTempCWindows[_i]->m_vRealPosition.goalv().y - sel_y;
+  			  if (pTempCWindows[_i]->m_vRealPosition.goal().y < sel_y ) {
+  			    int dis_x = pTempCWindows[_i]->m_vRealPosition.goal().x - sel_x;
+  			    int dis_y = pTempCWindows[_i]->m_vRealPosition.goal().y - sel_y;
   			    long long int tmp_distance = dis_x * dis_x + dis_y * dis_y; 
   			    if (tmp_distance < distance) {
   			      distance = tmp_distance;
@@ -163,9 +163,9 @@ CWindow *direction_select(std::string arg){
   		break;
   	case ShiftDirection::Down:
   		for (int _i = 0; _i <= last; _i++) {
-  		  if (pTempCWindows[_i]->m_vRealPosition.goalv().y > sel_y && pTempCWindows[_i]->m_vRealPosition.goalv().x == sel_x) {
-  		    int dis_x = pTempCWindows[_i]->m_vRealPosition.goalv().x - sel_x;
-  		    int dis_y = pTempCWindows[_i]->m_vRealPosition.goalv().y - sel_y;
+  		  if (pTempCWindows[_i]->m_vRealPosition.goal().y > sel_y && pTempCWindows[_i]->m_vRealPosition.goal().x == sel_x) {
+  		    int dis_x = pTempCWindows[_i]->m_vRealPosition.goal().x - sel_x;
+  		    int dis_y = pTempCWindows[_i]->m_vRealPosition.goal().y - sel_y;
   		    long long int tmp_distance = dis_x * dis_x + dis_y * dis_y; 
   		    if (tmp_distance < distance) {
   		      distance = tmp_distance;
@@ -175,9 +175,9 @@ CWindow *direction_select(std::string arg){
   		}
 		if(!pTempFocusCWindows){
   			for (int _i = 0; _i <= last; _i++) {
-  			  if (pTempCWindows[_i]->m_vRealPosition.goalv().y > sel_y ) {
-  			    int dis_x = pTempCWindows[_i]->m_vRealPosition.goalv().x - sel_x;
-  			    int dis_y = pTempCWindows[_i]->m_vRealPosition.goalv().y - sel_y;
+  			  if (pTempCWindows[_i]->m_vRealPosition.goal().y > sel_y ) {
+  			    int dis_x = pTempCWindows[_i]->m_vRealPosition.goal().x - sel_x;
+  			    int dis_y = pTempCWindows[_i]->m_vRealPosition.goal().y - sel_y;
   			    long long int tmp_distance = dis_x * dis_x + dis_y * dis_y; 
   			    if (tmp_distance < distance) {
   			      distance = tmp_distance;
@@ -189,9 +189,9 @@ CWindow *direction_select(std::string arg){
   		break;
   	case ShiftDirection::Left:
   		for (int _i = 0; _i <= last; _i++) {
-  		  if (pTempCWindows[_i]->m_vRealPosition.goalv().x < sel_x && pTempCWindows[_i]->m_vRealPosition.goalv().y == sel_y) {
-  		    int dis_x = pTempCWindows[_i]->m_vRealPosition.goalv().x - sel_x;
-  		    int dis_y = pTempCWindows[_i]->m_vRealPosition.goalv().y - sel_y;
+  		  if (pTempCWindows[_i]->m_vRealPosition.goal().x < sel_x && pTempCWindows[_i]->m_vRealPosition.goal().y == sel_y) {
+  		    int dis_x = pTempCWindows[_i]->m_vRealPosition.goal().x - sel_x;
+  		    int dis_y = pTempCWindows[_i]->m_vRealPosition.goal().y - sel_y;
   		    long long int tmp_distance = dis_x * dis_x + dis_y * dis_y; 
   		    if (tmp_distance < distance) {
   		      distance = tmp_distance;
@@ -201,9 +201,9 @@ CWindow *direction_select(std::string arg){
   		}
 		if(!pTempFocusCWindows){
   			for (int _i = 0; _i <= last; _i++) {
-  			  if (pTempCWindows[_i]->m_vRealPosition.goalv().x < sel_x) {
-  			    int dis_x = pTempCWindows[_i]->m_vRealPosition.goalv().x - sel_x;
-  			    int dis_y = pTempCWindows[_i]->m_vRealPosition.goalv().y - sel_y;
+  			  if (pTempCWindows[_i]->m_vRealPosition.goal().x < sel_x) {
+  			    int dis_x = pTempCWindows[_i]->m_vRealPosition.goal().x - sel_x;
+  			    int dis_y = pTempCWindows[_i]->m_vRealPosition.goal().y - sel_y;
   			    long long int tmp_distance = dis_x * dis_x + dis_y * dis_y; 
   			    if (tmp_distance < distance) {
   			      distance = tmp_distance;
@@ -215,9 +215,9 @@ CWindow *direction_select(std::string arg){
   		break;
   	case ShiftDirection::Right:
   		for (int _i = 0; _i <= last; _i++) {
-  		  if (pTempCWindows[_i]->m_vRealPosition.goalv().x > sel_x  && pTempCWindows[_i]->m_vRealPosition.goalv().y == sel_y) {
-  		    int dis_x = pTempCWindows[_i]->m_vRealPosition.goalv().x - sel_x;
-  		    int dis_y = pTempCWindows[_i]->m_vRealPosition.goalv().y - sel_y;
+  		  if (pTempCWindows[_i]->m_vRealPosition.goal().x > sel_x  && pTempCWindows[_i]->m_vRealPosition.goal().y == sel_y) {
+  		    int dis_x = pTempCWindows[_i]->m_vRealPosition.goal().x - sel_x;
+  		    int dis_y = pTempCWindows[_i]->m_vRealPosition.goal().y - sel_y;
   		    long long int tmp_distance = dis_x * dis_x + dis_y * dis_y; 
   		    if (tmp_distance < distance) {
   		      distance = tmp_distance;
@@ -227,9 +227,9 @@ CWindow *direction_select(std::string arg){
   		}
 		if(!pTempFocusCWindows){
   			for (int _i = 0; _i <= last; _i++) {
-  			  if (pTempCWindows[_i]->m_vRealPosition.goalv().x > sel_x) {
-  			    int dis_x = pTempCWindows[_i]->m_vRealPosition.goalv().x - sel_x;
-  			    int dis_y = pTempCWindows[_i]->m_vRealPosition.goalv().y - sel_y;
+  			  if (pTempCWindows[_i]->m_vRealPosition.goal().x > sel_x) {
+  			    int dis_x = pTempCWindows[_i]->m_vRealPosition.goal().x - sel_x;
+  			    int dis_y = pTempCWindows[_i]->m_vRealPosition.goal().y - sel_y;
   			    long long int tmp_distance = dis_x * dis_x + dis_y * dis_y; 
   			    if (tmp_distance < distance) {
   			      distance = tmp_distance;
