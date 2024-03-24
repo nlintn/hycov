@@ -4,6 +4,8 @@ set(CMAKE_CXX_STANDARD 23)
 add_compile_definitions(WLR_USE_UNSTABLE)
 add_compile_options(-g -Wall -Wextra -Wno-unused-parameter -Wno-unused-value -Wno-missing-field-initializers -Wno-narrowing -Wno-pointer-arith)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # nix workaround
 if(CMAKE_EXPORT_COMPILE_COMMANDS)
   set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES
@@ -25,4 +27,3 @@ target_include_directories(hycov PRIVATE ${DEPS_INCLUDE_DIRS})
 install(TARGETS hycov LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 # set(CMAKE_VERBOSE_MAKEFILE ON)
-# set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
