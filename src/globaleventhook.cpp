@@ -256,9 +256,6 @@ static void hkFullscreenActive(std::string args) {
   if (!pWindow)
         return;
 
-  if (g_pCompositor->isWorkspaceSpecial(pWindow->m_iWorkspaceID))
-        return;
-
   if (g_hycov_isOverView && want_auto_fullscreen(pWindow) && !g_hycov_auto_fullscreen) {
     hycov_log(LOG,"FullscreenActive toggle leave overview with fullscreen");
     dispatch_toggleoverview("internalToggle");
