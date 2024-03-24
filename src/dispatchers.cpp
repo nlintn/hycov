@@ -24,7 +24,7 @@ void switchToLayoutWithoutReleaseData(std::string layout) {
     hycov_log(ERR, "Unknown layout!");
 }
 
-bool want_auto_fullscren(CWindow *pWindow) {
+bool want_auto_fullscreen(CWindow *pWindow) {
 	int nodeNumInTargetWorkspace = 1;
 
 	if(!pWindow) {
@@ -544,7 +544,7 @@ void dispatch_leaveoverview(std::string arg)
 
 		if(pActiveWindow->m_bIsFloating) {
 			g_pCompositor->changeWindowZOrder(pActiveWindow, true);
-		} else if(g_hycov_auto_fullscreen && want_auto_fullscren(pActiveWindow)) { // if enale auto_fullscreen after exit overview
+		} else if(g_hycov_auto_fullscreen && want_auto_fullscreen(pActiveWindow)) { // if enale auto_fullscreen after exit overview
 			g_pCompositor->setWindowFullscreen(pActiveWindow,true,FULLSCREEN_MAXIMIZED);
 		}
 	}

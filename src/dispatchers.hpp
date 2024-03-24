@@ -8,7 +8,7 @@ enum class ShiftDirection {
 	Right,
 };
 
-bool want_auto_fullscren(CWindow *pWindow);
+bool want_auto_fullscreen(CWindow *pWindow);
 bool isDirectionArg(std::string arg);
 CWindow *direction_select(std::string arg);
 CWindow *get_circle_next_window (std::string arg);
