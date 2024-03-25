@@ -416,6 +416,9 @@ void dispatch_enteroverview(std::string arg)
 		g_hycov_pSpawnHook->hook();
 	}
 
+	//disable float
+	g_hycov_pToggleActiveFloatingHook->hook();
+
 	g_hycov_pCKeybindManager_changeGroupActiveHook->hook();
 	g_hycov_pCKeybindManager_toggleGroupHook->hook();
 	g_hycov_pCKeybindManager_moveOutOfGroupHook->hook();
@@ -454,6 +457,9 @@ void dispatch_leaveoverview(std::string arg)
 	if(g_hycov_disable_spawn) {
 		g_hycov_pSpawnHook->unhook();
 	}
+
+	//enable float
+	g_hycov_pToggleActiveFloatingHook->unhook();
 
 	g_hycov_pCKeybindManager_changeGroupActiveHook->unhook();
 	g_hycov_pCKeybindManager_toggleGroupHook->unhook();

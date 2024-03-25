@@ -222,6 +222,11 @@ static void hkSpawn(std::string args) {
   hycov_log(LOG,"Spawn hook toggle");
 }
 
+static void hkToggleActiveFloating(std::string args) {
+  // just log a message and do nothing, mean the original function is disabled
+  hycov_log(LOG,"Float hook toggle");
+}
+
 static void hkStartAnim(void* thisptr,bool in, bool left, bool instant = false) {
   // if is exiting overview, omit the animation of workspace change (instant = true)
   if (g_hycov_isOverViewExiting) {
@@ -355,7 +360,7 @@ void registerGlobalEventHook()
 
   // hook function of Gridlayout Remove a node from tiled list
   g_hycov_pCWindow_onUnmap = HyprlandAPI::createFunctionHook(PHANDLE, (void*)&CWindow::onUnmap, (void*)&hkCWindow_onUnmap);
-
+  g_hycov_pOnSwipeBeginHook = HyprlandAPI::createFunctionHook(PHANDLE, (void*)&CInputManager::onSwipeBegin, (void*)&hkOnSwipeBegin);
   // hook function of workspace change animation start
   g_hycov_pStartAnimHook = HyprlandAPI::createFunctionHook(PHANDLE, (void*)&CWorkspace::startAnim, (void*)&hkStartAnim);
   g_hycov_pStartAnimHook->hook();
@@ -399,6 +404,9 @@ void registerGlobalEventHook()
   //hook function of fullscreenActive
   static const auto FullscreenActiveMethods = HyprlandAPI::findFunctionsByName(PHANDLE, "fullscreenActive");
   g_hycov_pFullscreenActiveHook = HyprlandAPI::createFunctionHook(PHANDLE, FullscreenActiveMethods[0].address, (void*)&hkFullscreenActive);
+
+  static const auto FloatMethods = HyprlandAPI::findFunctionsByName(PHANDLE, "toggleActiveFloating");
+  g_hycov_pToggleActiveFloatingHook = HyprlandAPI::createFunctionHook(PHANDLE, FloatMethods[0].address, (void*)&hkToggleActiveFloating);
 
   //register pEvent hook
   if(g_hycov_enable_hotarea){

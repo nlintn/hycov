@@ -54,6 +54,7 @@ inline CFunctionHook* g_hycov_pCWindow_onUnmap = nullptr;
 inline CFunctionHook* g_hycov_pChangeworkspaceHook = nullptr;
 inline CFunctionHook* g_hycov_pMoveActiveToWorkspaceHook = nullptr;
 inline CFunctionHook* g_hycov_pSpawnHook = nullptr;
+inline CFunctionHook* g_hycov_pToggleActiveFloatingHook = nullptr;
 inline CFunctionHook* g_hycov_pStartAnimHook = nullptr;
 inline CFunctionHook* g_hycov_pFullscreenActiveHook = nullptr;
 inline CFunctionHook* g_hycov_pOnKeyboardKeyHook = nullptr;
