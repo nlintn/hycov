@@ -1,7 +1,10 @@
 #pragma once
 
+#include <hyprland/src/helpers/Vector2D.hpp>
+#include <hyprland/src/desktop/DesktopTypes.hpp>
 #include <hyprland/src/layout/IHyprLayout.hpp>
 #include <hyprland/src/SharedDefs.hpp>
+#include <list>
 
 struct SOvGridNodeData
 {
@@ -65,8 +68,9 @@ public:
   virtual void moveWindowTo(CWindow *, const std::string &dir);
   virtual void onEnable();
   virtual void onDisable();
+  virtual Vector2D predictSizeForNewWindowTiled();
   void applyNodeDataToWindow(SOvGridNodeData *);
-  void calculateWorkspace(const int &);
+  void calculateWorkspace(const PHLWORKSPACE &);
   int getNodesNumOnWorkspace(const int &);
   SOvGridNodeData *getNodeFromWindow(CWindow *);
   SOldLayoutRecordNodeData *getOldLayoutRecordNodeFromWindow(CWindow *);

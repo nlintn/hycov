@@ -2,6 +2,7 @@
 #include "globals.hpp"
 #include "OvGridLayout.hpp"
 #include "dispatchers.hpp"
+#include <hyprland/src/desktop/DesktopTypes.hpp>
 
 // find next focus window after remove a window
 CWindow *OvGridLayout::getNextWindowCandidate(CWindow* plastWindow) {
@@ -10,7 +11,7 @@ CWindow *OvGridLayout::getNextWindowCandidate(CWindow* plastWindow) {
     for (auto &w : g_pCompositor->m_vWindows)
     {
 		CWindow *pWindow = w.get();
-        if ((g_pCompositor->m_pLastMonitor->specialWorkspaceID != 0 && !g_pCompositor->isWorkspaceSpecial(pWindow->m_iWorkspaceID)) || (g_pCompositor->m_pLastMonitor->specialWorkspaceID == 0 && g_pCompositor->isWorkspaceSpecial(pWindow->m_iWorkspaceID)) || pWindow->m_iWorkspaceID != plastWindow->m_iWorkspaceID || pWindow->isHidden() || !pWindow->m_bIsMapped || pWindow->m_bFadingOut || pWindow->m_bIsFullscreen)
+        if ((g_pCompositor->m_pLastMonitor->activeSpecialWorkspaceID() != 0 && !pWindow->m_pWorkspace->m_bIsSpecialWorkspace) || (g_pCompositor->m_pLastMonitor->activeSpecialWorkspaceID() == 0 && pWindow->m_pWorkspace->m_bIsSpecialWorkspace) || pWindow->m_pWorkspace != plastWindow->m_pWorkspace || pWindow->isHidden() || !pWindow->m_bIsMapped || pWindow->m_bFadingOut || pWindow->m_bIsFullscreen)
             continue;
 		targetWindow = pWindow; // find the last window that is in same workspace with the remove window
     }
@@ -72,9 +73,9 @@ void OvGridLayout::onWindowCreatedTiling(CWindow *pWindow, eDirection direction)
 
     const auto pNode = &m_lOvGridNodesData.emplace_back(); // make a new node in list back
 
-    const auto pActiveWorkspace = g_pCompositor->getWorkspaceByID(pTargetMonitor->activeWorkspace); 
+    const auto pActiveWorkspace =pTargetMonitor->activeWorkspace; 
 
-    const auto pWindowOriWorkspace = g_pCompositor->getWorkspaceByID(pWindow->m_iWorkspaceID);
+    const auto pWindowOriWorkspace = pWindow->m_pWorkspace;
 
     auto oldLayoutRecordNode = getOldLayoutRecordNodeFromWindow(pWindow);
     if(oldLayoutRecordNode) {
@@ -89,13 +90,13 @@ void OvGridLayout::onWindowCreatedTiling(CWindow *pWindow, eDirection direction)
         pNode->pGroupNextWindow = pWindow->m_sGroupData.pNextWindow;
 	}
 
-    pNode->workspaceID = pWindow->m_iWorkspaceID; // encapsulate window objects as node objects to bind more properties
+    pNode->workspaceID = pWindow->workspaceID(); // encapsulate window objects as node objects to bind more properties
     pNode->pWindow = pWindow;
     pNode->workspaceName = pWindowOriWorkspace->m_szName;
     
     //record the window stats which are used by restore
     pNode->ovbk_windowMonitorId = pWindow->m_iMonitorID;
-    pNode->ovbk_windowWorkspaceId = pWindow->m_iWorkspaceID;
+    pNode->ovbk_windowWorkspaceId = pWindow->workspaceID();
     pNode->ovbk_windowFullscreenMode  = pWindowOriWorkspace->m_efFullscreenMode;
     pNode->ovbk_position = pWindow->m_vRealPosition.goal();
     pNode->ovbk_size = pWindow->m_vRealSize.goal();
@@ -111,8 +112,8 @@ void OvGridLayout::onWindowCreatedTiling(CWindow *pWindow, eDirection direction)
 
 
     //change all client(exclude special workspace) to active worksapce 
-    if ( !g_pCompositor->isWorkspaceSpecial(pWindow->m_iWorkspaceID) && pNode->isInOldLayout && (pWindowOriWorkspace->m_iID != pActiveWorkspace->m_iID || pWindowOriWorkspace->m_szName != pActiveWorkspace->m_szName) && (!g_hycov_only_active_workspace || g_hycov_forece_display_all || g_hycov_forece_display_all_in_one_monitor))    {
-        pNode->workspaceID = pWindow->m_iWorkspaceID = pActiveWorkspace->m_iID;
+    if ( !pWindow->m_pWorkspace->m_bIsSpecialWorkspace && pNode->isInOldLayout && (pWindowOriWorkspace->m_iID != pActiveWorkspace->m_iID || pWindowOriWorkspace->m_szName != pActiveWorkspace->m_szName) && (!g_hycov_only_active_workspace || g_hycov_forece_display_all || g_hycov_forece_display_all_in_one_monitor))    {
+        pNode->workspaceID = pWindow->m_pWorkspace == pActiveWorkspace;
         pNode->workspaceName = pActiveWorkspace->m_szName;
         pNode->pWindow->m_iMonitorID = pTargetMonitor->ID;
     }
@@ -182,7 +183,7 @@ void OvGridLayout::onWindowRemovedTiling(CWindow *pWindow)
     if(pNode->isGroupActive && pNode->pGroupPrevWindow && pNode->pGroupPrevWindow != pNode->pWindow) {
         pNode->pWindow = pNode->pGroupPrevWindow;
         pNode->pGroupPrevWindow = pNode->pGroupPrevWindow->getGroupPrevious();
-        pNode->pWindow->m_iWorkspaceID = pNode->workspaceID;
+        pNode->pWindow->workspaceID() == pNode->workspaceID;
         applyNodeDataToWindow(pNode);
         pNode->isInOldLayout = false;
         g_pCompositor->focusWindow(pNode->pWindow);
@@ -204,9 +205,8 @@ bool OvGridLayout::isWindowTiled(CWindow *pWindow)
     return getNodeFromWindow(pWindow) != nullptr;
 }
 
-void OvGridLayout::calculateWorkspace(const int &ws)
+void OvGridLayout::calculateWorkspace(const PHLWORKSPACE &ws)
 {
-    const auto pWorksapce = g_pCompositor->getWorkspaceByID(ws); 
     auto dataSize = m_lOvGridNodesData.size();
     auto pTempNodes = new SOvGridNodeData*[dataSize + 1];
     SOvGridNodeData *pNode;
@@ -215,13 +215,13 @@ void OvGridLayout::calculateWorkspace(const int &ws)
     int dx, cw, ch;;
     int cols, rows, overcols,NODECOUNT;
 
-    if (!pWorksapce) {
+    if (!ws) {
         delete[] pTempNodes;
         return;
     }
 
-    NODECOUNT = getNodesNumOnWorkspace(pWorksapce->m_iID);          
-    const auto pMonitor = g_pCompositor->getMonitorFromID(pWorksapce->m_iMonitorID); 
+    NODECOUNT = getNodesNumOnWorkspace(ws->m_iID);          
+    const auto pMonitor = g_pCompositor->getMonitorFromID(ws->m_iMonitorID); 
 
     if (NODECOUNT == 0) {
         delete[] pTempNodes;
@@ -247,7 +247,7 @@ void OvGridLayout::calculateWorkspace(const int &ws)
 
     for (auto &node : m_lOvGridNodesData)
     {
-        if (node.workspaceID == ws)
+        if (node.workspaceID == ws->m_iID)
         {
             pTempNodes[n] = &node;
             n++;
@@ -327,16 +327,16 @@ void OvGridLayout::recalculateMonitor(const int &monid)
     const auto pMonitor = g_pCompositor->getMonitorFromID(monid);                       // 根据monitor id获取monitor对象
     g_pHyprRenderer->damageMonitor(pMonitor); // Use local rendering
 
-    if (pMonitor->specialWorkspaceID) {
-        calculateWorkspace(pMonitor->specialWorkspaceID);
+    if (pMonitor->activeSpecialWorkspaceID()) {
+        calculateWorkspace(pMonitor->activeSpecialWorkspace);
         return;
     }
 
-    const auto pWorksapce = g_pCompositor->getWorkspaceByID(pMonitor->activeWorkspace); // 获取当前workspace对象
+    const auto pWorksapce = pMonitor->activeWorkspace; // 获取当前workspace对象
     if (!pWorksapce)
         return;
 
-    calculateWorkspace(pWorksapce->m_iID); // calculate windwo's size and position
+    calculateWorkspace(pWorksapce); // calculate windwo's size and position
 }
 
 // set window's size and position
@@ -421,16 +421,16 @@ void OvGridLayout::changeToActivceSourceWorkspace()
 {
     CWindow *pWindow = nullptr;
     SOvGridNodeData *pNode;
-    CWorkspace *pWorksapce;
+    PHLWORKSPACE pWorksapce;
     hycov_log(LOG,"changeToActivceSourceWorkspace");
     pWindow = g_pCompositor->m_pLastWindow;
     pNode = getNodeFromWindow(pWindow);
     if(pNode) {
         pWorksapce = g_pCompositor->getWorkspaceByID(pNode->ovbk_windowWorkspaceId); 
     } else if(pWindow) {
-        pWorksapce = g_pCompositor->getWorkspaceByID(pWindow->m_iWorkspaceID); 
+        pWorksapce =pWindow->m_pWorkspace; 
     } else {
-        pWorksapce = g_pCompositor->getWorkspaceByID(g_pCompositor->m_pLastMonitor->activeWorkspace);
+        pWorksapce = g_pCompositor->m_pLastMonitor->activeWorkspace;
     }
     // pMonitor->changeWorkspace(pWorksapce);
     hycov_log(LOG,"changeToWorkspace:{}",pWorksapce->m_iID);
@@ -440,13 +440,13 @@ void OvGridLayout::changeToActivceSourceWorkspace()
 
 void OvGridLayout::moveWindowToSourceWorkspace()
 {
-    CWorkspace *pWorkspace;
+    PHLWORKSPACE pWorkspace;
     
     hycov_log(LOG,"moveWindowToSourceWorkspace");
 
     for (auto &nd : m_lOvGridNodesData)
     {
-        if (nd.pWindow && (nd.pWindow->m_iWorkspaceID != nd.ovbk_windowWorkspaceId || nd.workspaceName != nd.ovbk_windowWorkspaceName ))
+        if (nd.pWindow && (nd.pWindow->workspaceID() != nd.ovbk_windowWorkspaceId || nd.workspaceName != nd.ovbk_windowWorkspaceName ))
         {
             pWorkspace = g_pCompositor->getWorkspaceByID(nd.ovbk_windowWorkspaceId);
             if (!pWorkspace){
@@ -455,7 +455,7 @@ void OvGridLayout::moveWindowToSourceWorkspace()
                 hycov_log(LOG,"create workspace: id:{} monitor:{} name:{}",nd.ovbk_windowWorkspaceId,nd.pWindow->m_iMonitorID,nd.ovbk_windowWorkspaceName);
             }
             nd.pWindow->m_iMonitorID = nd.ovbk_windowMonitorId;
-            nd.workspaceID = nd.pWindow->m_iWorkspaceID = nd.ovbk_windowWorkspaceId;
+            nd.workspaceID = nd.pWindow->workspaceID() == nd.ovbk_windowWorkspaceId;
             nd.workspaceName = nd.ovbk_windowWorkspaceName;
             nd.pWindow->m_vPosition = nd.ovbk_position;
             nd.pWindow->m_vSize = nd.ovbk_size;
