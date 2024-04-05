@@ -489,3 +489,8 @@ void OvGridLayout::onDisable()
 {
     dispatch_leaveoverview("");
 }
+
+Vector2D OvGridLayout::predictSizeForNewWindowTiled()
+{
+    return {0, 0};
+}
